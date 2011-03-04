@@ -258,7 +258,8 @@ if has("gui_running")
     "tell the term has 256 colors
     set t_Co=256
 
-    colorscheme railscasts
+    "colorscheme railscasts
+    colorscheme xoriamod
     set guitablabel=%M%t
     set lines=40
     set columns=115
@@ -284,7 +285,7 @@ if has("gui_running")
     endif
 
     if has("gui_win32") || has("gui_win32s")
-        set guifont=Consolas:h12
+        set guifont=Consolas:h10
         set enc=utf-8
     endif
 else
