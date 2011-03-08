@@ -411,4 +411,8 @@ nmap <D-]> >>
 vmap <D-[> <gv
 vmap <D-]> >gv
 
+" Use the arrows to something usefull
+map <C-right> :bn<cr>
+map <C-left> :bp<cr>
+
 let ScreenShot = {'Icon':0, 'Credits':0, 'force_background':'#FFFFFF'}
