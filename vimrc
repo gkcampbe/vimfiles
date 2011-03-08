@@ -1,5 +1,5 @@
 "necessary on some Linux distros for pathogen to properly load bundles
-filetype off
+filetype on
 
 "load pathogen managed plugins
 call pathogen#runtime_append_all_bundles()
@@ -15,14 +15,23 @@ set backspace=indent,eol,start
 set history=1000
 
 set showcmd     "show incomplete cmds down the bottom
+set cmdheight=2 "commandbar height
 set showmode    "show current mode down the bottom
+
+" get rid of the silly characters in separators
+set fillchars = ""
 
 set incsearch   "find the next match as we type the search
 set hlsearch    "hilight searches by default
 
 set number      "add line numbers
 set showbreak=...
-set wrap linebreak nolist
+set wrap
+set linebreak nolist
+
+" like <leader>w saves the current file
+let mapleader = ","
+let g:mapleader = ","  
 
 "mapping for command key to map navigation thru display lines instead
 "of just numbered lines
@@ -36,6 +45,11 @@ nmap <D-k> gk
 nmap <D-4> g$
 nmap <D-6> g^
 nmap <D-0> g^
+
+" Highlight the current line and column
+" Don't do this - It makes window redraws painfully slow
+set cursorline
+set nocursorcolumn
 
 "add some line space for easy reading
 set linespace=4
@@ -69,8 +83,8 @@ set statusline+=%{exists('g:loaded_rvm')?rvm#statusline():''}
 
 "set statusline+=%h      "help file flag
 "set statusline+=%y      "filetype
-"set statusline+=%r      "read only flag
-"set statusline+=%m      "modified flag
+set statusline+=%r      "read only flag
+set statusline+=%m      "modified flag
 
 "display a warning if &et is wrong, or we have mixed-indenting
 "set statusline+=%#error#
@@ -83,7 +97,7 @@ set statusline+=%{exists('g:loaded_rvm')?rvm#statusline():''}
 "
 "set statusline+=%#warningmsg#
 "set statusline+=%{SyntasticStatuslineFlag()}
-"set statusline+=%*
+set statusline+=%*
 
 "display a warning if &paste is set
 "set statusline+=%#error#
@@ -100,7 +114,7 @@ set statusline+=\ %P    "percent through file
 set laststatus=2
 
 "turn off needless toolbar on gvim/mvim
-set guioptions-=T
+set guioptions=acgm
 
 "recalculate the trailing whitespace warning when idle, and after saving
 autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning
@@ -210,17 +224,28 @@ function! s:Median(nums)
 endfunction
 
 "indent settings
-set shiftwidth=2
+set tabstop=4
+set shiftwidth=4
 set softtabstop=2
 set expandtab
 set autoindent
+set smartindent
 
+             " I'm happy to type the case of things.  I tried the ignorecase, smartcase
+" thing but it just wasn't working out for me
+set ignorecase
+set hlsearch
+set incsearch
+set magic
+set showmatch
+set mat=2
+ 
 "folding settings
 set foldmethod=indent   "fold based on indent
 set foldnestmax=3       "deepest fold is 3 levels
 set nofoldenable        "dont fold by default
 
-set wildmode=list:longest   "make cmdline tab completion similar to bash
+"set wildmode=list:longest   "make cmdline tab completion similar to bash
 set wildmenu                "enable ctrl-n and ctrl-p to scroll thru matches
 set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
 
@@ -232,9 +257,19 @@ set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
 set formatoptions-=o "dont continue comments when pushing o/O
 
 "vertical/horizontal scroll off settings
-set scrolloff=3
+set scrolloff=8
 set sidescrolloff=7
 set sidescroll=1
+
+" Allow the cursor to go in to "invalid" places
+set virtualedit=all
+
+" Add the unnamed register to the clipboard
+set clipboard+=unnamed
+
+" Automatically read a file that has changed on disk
+set autoread
+
 
 "load ftplugins and indent files
 filetype plugin on
@@ -250,21 +285,35 @@ set ttymouse=xterm2
 "hide buffers when not displayed
 set hidden
 
+set shellslash
+
+set grepprg=grep\ -nH\ $*
+
 "Command-T configuration
 let g:CommandTMaxHeight=10
 let g:CommandTMatchWindowAtTop=1
+
+"Disable autoclose
+let g:autoclose_on = 0
 
 if has("gui_running")
     "tell the term has 256 colors
     set t_Co=256
 
-    colorscheme railscasts
+    "colorscheme railscasts
+    colorscheme xoriamod
     set guitablabel=%M%t
-    set lines=40
-    set columns=115
+    "set lines=40
+    "set columns=115
+    winpos 0 0
+    if !&diff
+      winsize 130 120
+    else
+      winsize 227 120
+    endif
 
     if has("gui_gnome")
-        set term=gnome-256color
+      set term=gnome-256color
         colorscheme railscasts
         set guifont=Monospace\ Bold\ 12
     endif
@@ -284,7 +333,7 @@ if has("gui_running")
     endif
 
     if has("gui_win32") || has("gui_win32s")
-        set guifont=Consolas:h12
+        set guifont=Consolas:h10
         set enc=utf-8
     endif
 else
@@ -401,6 +450,15 @@ map <C-l> <C-w>l
 "key mapping for saving file
 nmap <C-s> :w<CR>
 
+" cd to the directory containing the file in the buffer
+nmap <silent> ,cd :lcd %:h<CR>
+
+" Edit the vimrc file
+nmap <silent> ,ev :e ~/vimfiles/vimrc<CR>
+
+" set text wrapping toggles
+nmap <silent> \w :set invwrap<CR>:set wrap?<CR>
+
 "key mapping for tab navigation
 nmap <Tab> gt
 nmap <S-Tab> gT
@@ -415,4 +473,106 @@ vmap <D-]> >gv
 map <C-right> :bn<cr>
 map <C-left> :bp<cr>
 
+" Change the color scheme
+nmap ,sl :colorscheme sienna<cr>:Colo light<cr>
+nmap ,sd :colorscheme xoriamod<cr>
+nmap ,sp :colorscheme peaksea<cr>
+nmap ,sa :colorscheme wombat<cr>
+nmap ,so :colorscheme oceandeep<cr>
+nmap ,sr :colorscheme railscasts<cr>
+
 let ScreenShot = {'Icon':0, 'Credits':0, 'force_background':'#FFFFFF'}
+
+"Turn off spell checking with English dictionary
+set nospell
+set spelllang=en
+set spellsuggest=9 "show only 9 suggestions for misspelled words
+"
+" Smart mappings on the command line
+cno $h e ~/
+cno $d e ~/Desktop/
+cno $j e ./
+cno $c e <C-\>eCurrentFileDir("e")<cr>
+
+" $q is super useful when browsing on the command line
+cno $q <C-\>eDeleteTillSlash()<cr>
+
+func! Cwd()
+  let cwd = getcwd()
+  return "e " . cwd 
+endfunc
+
+func! MySys()
+    return "win"
+endfunc
+
+func! DeleteTillSlash()
+  let g:cmd = getcmdline()
+  if MySys() == "linux" || MySys() == "mac"
+    let g:cmd_edited = substitute(g:cmd, "\\(.*\[/\]\\).*", "\\1", "")
+  else
+    let g:cmd_edited = substitute(g:cmd, "\\(.*\[\\\\]\\).*", "\\1", "")
+  endif
+  if g:cmd == g:cmd_edited
+    if MySys() == "linux" || MySys() == "mac"
+      let g:cmd_edited = substitute(g:cmd, "\\(.*\[/\]\\).*/", "\\1", "")
+    else
+      let g:cmd_edited = substitute(g:cmd, "\\(.*\[\\\\\]\\).*\[\\\\\]", "\\1", "")
+    endif
+  endif   
+  return g:cmd_edited
+endfunc
+
+func! CurrentFileDir(cmd)
+  return a:cmd . " " . expand("%:p:h") . "/"
+endfunc
+
+" always add the current file's directory to the path if not already there
+autocmd BufRead *
+      \ let s:tempPath=escape(escape(expand("%:p:h"), ' '), '\ ') |
+      \ exec "set path-=".s:tempPath |
+      \ exec "set path+=".s:tempPath    
+
+" Map space to / (search) and c-space to ? (backwards search)
+map <space> /
+map <c-space> ?
+
+"Move a line of text using ALT+[jk] or Comamnd+[jk] on mac
+nmap <M-j> mz:m+<cr>`z
+nmap <M-k> mz:m-2<cr>`z
+vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
+vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z       
+
+"-----------------------------------------------------------------------------
+" Change statusline color on change mode
+"-----------------------------------------------------------------------------
+" Mode Indication -Prominent!
+function! InsertStatuslineColor(mode)
+  if a:mode == 'i'
+    hi statusline guifg=black guibg=#dfdf00
+    set cursorcolumn
+    set spell
+  elseif a:mode == 'r'
+    hi statusline guibg=blue
+  else
+    hi statusline guibg= magenta
+  endif
+endfunction
+
+function! InsertLeaveActions()
+  hi statusline guibg=#4e4e4e guifg=#d0d0d0 
+  set nocursorcolumn
+  set nospell
+endfunction
+
+au InsertEnter * call InsertStatuslineColor(v:insertmode)
+au InsertLeave * call InsertLeaveActions()
+
+" to handle exiting insert mode via a control-C
+inoremap <c-c> <c-o>:call InsertLeaveActions()<cr><c-c>
+
+" default the statusline to green when entering Vim
+hi statusline guibg=#4e4e4e guifg=#d0d0d0 
+
+" have a permanent statusline to color
+set laststatus=2
